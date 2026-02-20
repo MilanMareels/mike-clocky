@@ -1,14 +1,29 @@
 "use client";
-import { useState, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
+
+interface Site {
+  _id: string;
+  name: string;
+}
 
 export default function Home() {
   const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
   const [startTime, setStartTime] = useState<string>("08:00");
   const [endTime, setEndTime] = useState<string>("17:00");
-  const [site, setSite] = useState<string>("Cadix");
+  const [site, setSite] = useState<string>("");
   const [note, setNote] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
+  const [availableSites, setAvailableSites] = useState<Site[]>([]);
+
+  useEffect(() => {
+    fetch("/api/sites")
+      .then((res) => res.json())
+      .then((data) => {
+        setAvailableSites(data);
+        if (data.length > 0) setSite(data[0].name);
+      });
+  }, []);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -65,10 +80,12 @@ export default function Home() {
                 onChange={(e) => setSite(e.target.value)}
                 className="w-[98%] p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium appearance-none"
               >
-                <option value="Cadix">Cadix</option>
-                <option value="Palfijn">Palfijn</option>
-                <option value="Sint Augustinus">Sint Augustinus</option>
-                <option value="Middelheim">Middelheim</option>
+                {availableSites.length === 0 && <option value="">Geen locaties gevonden</option>}
+                {availableSites.map((s) => (
+                  <option key={s._id} value={s.name}>
+                    {s.name}
+                  </option>
+                ))}
               </select>
               <div className="absolute right-[15%] top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">▼</div>
             </div>
