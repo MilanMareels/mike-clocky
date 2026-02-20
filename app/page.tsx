@@ -41,7 +41,7 @@ export default function Home() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 overflow-x-hidden">
       <h1 className="text-3xl font-extrabold mb-8 text-slate-900 mt-4">
         Werkdag
         <br />
@@ -55,8 +55,9 @@ export default function Home() {
         </div>
       )}
 
-      <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
-        <form onSubmit={handleSubmit} className="space-y-5">
+      {/* box-border hier toegevoegd */}
+      <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 box-border w-full">
+        <form onSubmit={handleSubmit} className="space-y-5 box-border">
           <div>
             <label className="block text-sm font-semibold text-slate-500 mb-2">Datum</label>
             <input
@@ -64,7 +65,7 @@ export default function Home() {
               value={date}
               onChange={(e) => setDate(e.target.value)}
               required
-              className="w-full p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
+              className="w-full box-border p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
             />
           </div>
 
@@ -74,7 +75,7 @@ export default function Home() {
               <select
                 value={site}
                 onChange={(e) => setSite(e.target.value)}
-                className="w-full p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium appearance-none"
+                className="w-full box-border p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium appearance-none"
               >
                 {availableSites.length === 0 && <option value="">Geen locaties gevonden</option>}
                 {availableSites.map((s) => (
@@ -83,7 +84,7 @@ export default function Home() {
                   </option>
                 ))}
               </select>
-              <div className="absolute right-[15%] top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">▼</div>
+              <div className="absolute right-[5%] top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">▼</div>
             </div>
           </div>
 
@@ -94,7 +95,7 @@ export default function Home() {
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
               required
-              className="w-full p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
+              className="w-full box-border p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
             />
           </div>
           <div>
@@ -104,7 +105,7 @@ export default function Home() {
               value={endTime}
               onChange={(e) => setEndTime(e.target.value)}
               required
-              className="w-full p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
+              className="w-full box-border p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
             />
           </div>
 
@@ -114,7 +115,7 @@ export default function Home() {
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Bijv. Extra taken gedaan..."
-              className="w-full p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-base font-medium min-h-20"
+              className="w-full box-border p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-base font-medium min-h-20"
             />
           </div>
 
@@ -123,7 +124,7 @@ export default function Home() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg shadow-[0_8px_16px_rgba(37,99,235,0.2)] active:scale-[0.98] transition-all disabled:opacity-70"
+            className="w-full box-border bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg shadow-[0_8px_16px_rgba(37,99,235,0.2)] active:scale-[0.98] transition-all disabled:opacity-70"
           >
             {loading ? "Bezig met opslaan..." : "Uren Opslaan"}
           </button>
