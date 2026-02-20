@@ -5,6 +5,8 @@ export default function Home() {
   const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
   const [startTime, setStartTime] = useState<string>("08:00");
   const [endTime, setEndTime] = useState<string>("17:00");
+  const [site, setSite] = useState<string>("Cadix");
+  const [note, setNote] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
 
@@ -15,25 +17,32 @@ export default function Home() {
     const res = await fetch("/api/workdays", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ dateString: date, startTime, endTime }),
+      body: JSON.stringify({ dateString: date, startTime, endTime, site, note }),
     });
 
     if (res.ok) {
       const data = await res.json();
       setMessage(`Opgeslagen! Je hebt ${data.netHours} uur gewerkt vandaag.`);
+      setNote(""); // Reset notitie na opslaan
+      setTimeout(() => setMessage(""), 3000);
     }
     setLoading(false);
   };
 
   return (
-    // ... exact dezelfde JSX weergave als in het vorige JavaScript voorbeeld ...
-    // (De HTML structuur en Tailwind classes uit de vorige reactie blijven identiek)
     <div className="p-6">
       <h1 className="text-3xl font-extrabold mb-8 text-slate-900 mt-4">
         Werkdag
         <br />
         <span className="text-blue-600">Toevoegen</span>
       </h1>
+
+      {message && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm bg-slate-900 text-white px-4 py-4 rounded-2xl shadow-2xl z-50 flex items-center justify-center gap-3 transition-all">
+          <span className="text-xl">✅</span>
+          <span className="font-bold text-sm">{message}</span>
+        </div>
+      )}
 
       <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -46,6 +55,23 @@ export default function Home() {
               required
               className="w-[90%] p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-slate-500 mb-2">Site / Locatie</label>
+            <div className="relative">
+              <select
+                value={site}
+                onChange={(e) => setSite(e.target.value)}
+                className="w-[98%] p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium appearance-none"
+              >
+                <option value="Cadix">Cadix</option>
+                <option value="Palfijn">Palfijn</option>
+                <option value="Sint Augustinus">Sint Augustinus</option>
+                <option value="Middelheim">Middelheim</option>
+              </select>
+              <div className="absolute right-[15%] top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">▼</div>
+            </div>
           </div>
 
           <div>
@@ -69,6 +95,16 @@ export default function Home() {
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-semibold text-slate-500 mb-2">Notitie (optioneel)</label>
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Bijv. Extra taken gedaan..."
+              className="w-[97%] p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-base font-medium min-h-20"
+            />
+          </div>
+
           <div className="text-xs text-slate-400 bg-blue-50 p-3 rounded-xl flex items-center">💡 24 minuten pauze wordt automatisch van je totaal afgetrokken.</div>
 
           <button
@@ -78,8 +114,6 @@ export default function Home() {
           >
             {loading ? "Bezig met opslaan..." : "Uren Opslaan"}
           </button>
-
-          {message && <div className="text-center font-medium text-green-600 mt-4 bg-green-50 p-3 rounded-xl">{message}</div>}
         </form>
       </div>
     </div>

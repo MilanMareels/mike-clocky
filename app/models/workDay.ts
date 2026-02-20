@@ -5,6 +5,8 @@ export interface IWorkDay extends Document {
   startTime: string;
   endTime: string;
   netHours: number;
+  site?: string;
+  note?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -15,6 +17,8 @@ const WorkDaySchema = new Schema<IWorkDay>(
     startTime: { type: String, required: true },
     endTime: { type: String, required: true },
     netHours: { type: Number, required: true },
+    site: { type: String, required: false },
+    note: { type: String, required: false },
   },
   { timestamps: true },
 );
