@@ -1,65 +1,87 @@
-import Image from "next/image";
+"use client";
+import { useState, FormEvent } from "react";
 
 export default function Home() {
+  const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
+  const [startTime, setStartTime] = useState<string>("08:00");
+  const [endTime, setEndTime] = useState<string>("17:00");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const res = await fetch("/api/workdays", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dateString: date, startTime, endTime }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      setMessage(`Opgeslagen! Je hebt ${data.netHours} uur gewerkt vandaag.`);
+    }
+    setLoading(false);
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    // ... exact dezelfde JSX weergave als in het vorige JavaScript voorbeeld ...
+    // (De HTML structuur en Tailwind classes uit de vorige reactie blijven identiek)
+    <div className="p-6">
+      <h1 className="text-3xl font-extrabold mb-8 text-slate-900 mt-4">
+        Werkdag
+        <br />
+        <span className="text-blue-600">Toevoegen</span>
+      </h1>
+
+      <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-semibold text-slate-500 mb-2">Datum</label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+              className="w-[90%] p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-slate-500 mb-2">Start</label>
+            <input
+              type="time"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+              required
+              className="w-[90%] p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-500 mb-2">Einde</label>
+            <input
+              type="time"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+              required
+              className="w-[90%] p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
+            />
+          </div>
+
+          <div className="text-xs text-slate-400 bg-blue-50 p-3 rounded-xl flex items-center">💡 24 minuten pauze wordt automatisch van je totaal afgetrokken.</div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg shadow-[0_8px_16px_rgba(37,99,235,0.2)] active:scale-[0.98] transition-all disabled:opacity-70"
           >
-            Documentation
-          </a>
-        </div>
-      </main>
+            {loading ? "Bezig met opslaan..." : "Uren Opslaan"}
+          </button>
+
+          {message && <div className="text-center font-medium text-green-600 mt-4 bg-green-50 p-3 rounded-xl">{message}</div>}
+        </form>
+      </div>
     </div>
   );
 }
