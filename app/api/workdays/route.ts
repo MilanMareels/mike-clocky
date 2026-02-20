@@ -27,6 +27,23 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(workday);
 }
 
+export async function PUT(req: NextRequest) {
+  await connectToDB();
+  const body = await req.json();
+  const { _id, dateString, startTime, endTime, site, note } = body;
+
+  const [startH, startM] = startTime.split(":").map(Number);
+  const [endH, endM] = endTime.split(":").map(Number);
+
+  const totalMinutes = endH * 60 + endM - (startH * 60 + startM);
+  const netMinutes = totalMinutes - 24; // 24 minuten pauze
+  const netHours = +(netMinutes / 60).toFixed(2);
+
+  const workday = await WorkDay.findByIdAndUpdate(_id, { dateString, startTime, endTime, netHours, site, note }, { new: true });
+
+  return NextResponse.json(workday);
+}
+
 export async function DELETE(req: Request) {
   await connectToDB();
   const { searchParams } = new URL(req.url);
