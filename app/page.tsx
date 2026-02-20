@@ -1,10 +1,6 @@
 "use client";
 import { useState, useEffect, FormEvent } from "react";
-
-interface Site {
-  _id: string;
-  name: string;
-}
+import { Site } from "./types";
 
 export default function Home() {
   const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
@@ -38,7 +34,7 @@ export default function Home() {
     if (res.ok) {
       const data = await res.json();
       setMessage(`Opgeslagen! Je hebt ${data.netHours} uur gewerkt vandaag.`);
-      setNote(""); // Reset notitie na opslaan
+      setNote("");
       setTimeout(() => setMessage(""), 3000);
     }
     setLoading(false);
@@ -68,7 +64,7 @@ export default function Home() {
               value={date}
               onChange={(e) => setDate(e.target.value)}
               required
-              className="w-[90%] p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
+              className="w-full p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
             />
           </div>
 
@@ -78,7 +74,7 @@ export default function Home() {
               <select
                 value={site}
                 onChange={(e) => setSite(e.target.value)}
-                className="w-[98%] p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium appearance-none"
+                className="w-full p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium appearance-none"
               >
                 {availableSites.length === 0 && <option value="">Geen locaties gevonden</option>}
                 {availableSites.map((s) => (
@@ -98,7 +94,7 @@ export default function Home() {
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
               required
-              className="w-[90%] p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
+              className="w-full p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
             />
           </div>
           <div>
@@ -108,7 +104,7 @@ export default function Home() {
               value={endTime}
               onChange={(e) => setEndTime(e.target.value)}
               required
-              className="w-[90%] p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
+              className="w-full p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
             />
           </div>
 
@@ -118,7 +114,7 @@ export default function Home() {
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Bijv. Extra taken gedaan..."
-              className="w-[97%] p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-base font-medium min-h-20"
+              className="w-full p-3 bg-slate-50 rounded-2xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-base font-medium min-h-20"
             />
           </div>
 

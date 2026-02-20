@@ -14,7 +14,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-slate-50 text-slate-800 pb-20">
         <Analytics />
         <main className="max-w-md mx-auto min-h-screen relative">{children}</main>
-
         <BottomNav />
       </body>
     </html>

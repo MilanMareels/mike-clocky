@@ -2,14 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { Trash2, Plus } from "lucide-react";
-
-interface SiteData {
-  _id: string;
-  name: string;
-}
+import { Site } from "../types";
 
 export default function Instellingen() {
-  const [sites, setSites] = useState<SiteData[]>([]);
+  const [sites, setSites] = useState<Site[]>([]);
   const [newSite, setNewSite] = useState("");
   const [loading, setLoading] = useState(true);
 
