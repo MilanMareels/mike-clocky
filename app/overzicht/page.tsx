@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { format, parseISO, isSameWeek, isSameMonth, addWeeks, subWeeks, addMonths, subMonths, startOfWeek, endOfWeek } from "date-fns";
-import { nl, nlBE } from "date-fns/locale";
+import { nl } from "date-fns/locale";
 import { Site, WorkDayData } from "../types";
 import WorkDayItem from "../WorkDayItem";
 
@@ -57,25 +57,41 @@ export default function Overzicht() {
     }
   };
 
+  // Filter data voor de huidige week/maand
   const filteredData = data
     .filter((d) => {
       const date = parseISO(d.dateString);
       if (view === "week") return isSameWeek(date, currentDate, { weekStartsOn: 1 });
       return isSameMonth(date, currentDate);
     })
-    .sort((a, b) => new Date(b.dateString).getTime() - new Date(a.dateString).getTime()); // Sorteer nieuwste eerst
+    .sort((a, b) => new Date(b.dateString).getTime() - new Date(a.dateString).getTime());
 
   const totalHours = filteredData.reduce((acc, curr) => acc + curr.netHours, 0);
 
+  // Overuren berekening
   let overtime = 0;
+
   if (view === "week") {
+    // Voor week-weergave: gewoon verschil met 30.4
     overtime = totalHours - 30.4;
   } else {
-    const weeksInMonth = new Set(filteredData.map((d) => startOfWeek(parseISO(d.dateString), { weekStartsOn: 1 }).toISOString()));
+    // Voor maand-weergave: verzamel alle unieke weken in deze maand
+    const weeksInMonth = new Set();
 
-    weeksInMonth.forEach((weekStartISO) => {
+    // Eerst alle data filteren voor deze maand (niet alleen filteredData, want we hebben alle dagen nodig per week)
+    const monthData = data.filter((d) => isSameMonth(parseISO(d.dateString), currentDate));
+
+    // Vind alle unieke weken in deze maand
+    monthData.forEach((d) => {
+      const weekStart = startOfWeek(parseISO(d.dateString), { weekStartsOn: 1 }).toISOString();
+      weeksInMonth.add(weekStart);
+    });
+
+    // Bereken overuren per week en tel ze op
+    weeksInMonth.forEach((weekStartISO: any) => {
       const weekStart = parseISO(weekStartISO);
       const weekHours = data.filter((d) => isSameWeek(parseISO(d.dateString), weekStart, { weekStartsOn: 1 })).reduce((acc, curr) => acc + curr.netHours, 0);
+
       overtime += weekHours - 30.4;
     });
   }
@@ -118,8 +134,15 @@ export default function Overzicht() {
             {totalHours.toFixed(1)} <span className="text-xl font-medium">uur</span>
           </p>
           <div className="mt-4 inline-flex flex-col items-center bg-white/10 px-8 py-3 rounded-2xl backdrop-blur-sm border border-white/10">
-            <span className="text-blue-100 text-xs font-bold uppercase tracking-wider mb-1">Overuren</span>
-            {overtime > 0 ? <span className="text-3xl font-black text-green-300">+{overtime.toFixed(1)}</span> : <span className="text-lg font-bold text-blue-200">Nog geen overuren</span>}
+            <span className="text-blue-100 text-xs font-bold uppercase tracking-wider mb-1">{view === "week" ? "Overuren deze week" : "Overuren deze maand"}</span>
+            {Math.abs(overtime) > 0.01 ? ( // Gebruik een kleine marge voor afrondingsfouten
+              <span className={`text-3xl font-black ${overtime > 0 ? "text-green-300" : "text-red-300"}`}>
+                {overtime > 0 ? "+" : ""}
+                {overtime.toFixed(1)} uur
+              </span>
+            ) : (
+              <span className="text-lg font-bold text-blue-200">Precies 30,4 uur per week</span>
+            )}
           </div>
         </div>
       </div>
