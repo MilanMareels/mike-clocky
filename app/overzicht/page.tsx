@@ -57,7 +57,6 @@ export default function Overzicht() {
     }
   };
 
-  // Filter data voor de huidige week/maand
   const filteredData = data
     .filter((d) => {
       const date = parseISO(d.dateString);
@@ -68,33 +67,8 @@ export default function Overzicht() {
 
   const totalHours = filteredData.reduce((acc, curr) => acc + curr.netHours, 0);
 
-  // Overuren berekening
-  let overtime = 0;
-
-  if (view === "week") {
-    // Voor week-weergave: gewoon verschil met 30.4
-    overtime = totalHours - 30.4;
-  } else {
-    // Voor maand-weergave: verzamel alle unieke weken in deze maand
-    const weeksInMonth = new Set();
-
-    // Eerst alle data filteren voor deze maand (niet alleen filteredData, want we hebben alle dagen nodig per week)
-    const monthData = data.filter((d) => isSameMonth(parseISO(d.dateString), currentDate));
-
-    // Vind alle unieke weken in deze maand
-    monthData.forEach((d) => {
-      const weekStart = startOfWeek(parseISO(d.dateString), { weekStartsOn: 1 }).toISOString();
-      weeksInMonth.add(weekStart);
-    });
-
-    // Bereken overuren per week en tel ze op
-    weeksInMonth.forEach((weekStartISO: any) => {
-      const weekStart = parseISO(weekStartISO);
-      const weekHours = data.filter((d) => isSameWeek(parseISO(d.dateString), weekStart, { weekStartsOn: 1 })).reduce((acc, curr) => acc + curr.netHours, 0);
-
-      overtime += weekHours - 30.4;
-    });
-  }
+  const targetHours = view === "week" ? 30.4 : 121.6;
+  const overtime = totalHours - targetHours;
 
   const periodLabel =
     view === "week"
@@ -141,7 +115,9 @@ export default function Overzicht() {
                 {overtime.toFixed(1)} uur
               </span>
             ) : (
-              <span className="text-lg font-bold text-blue-200">Precies 30,4 uur per week</span>
+              <span className="text-lg font-bold text-blue-200">
+                Precies {targetHours.toString().replace(".", ",")} uur per {view === "week" ? "week" : "maand"}
+              </span>
             )}
           </div>
         </div>
